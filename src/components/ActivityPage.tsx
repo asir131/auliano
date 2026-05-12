@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 import { Logo } from "./Logo";
 import { Navbar } from "./Navbar";
 
@@ -124,6 +127,160 @@ function BookmarkIcon() {
         strokeWidth="1.4"
       />
     </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg aria-hidden="true" className="size-6" fill="none" viewBox="0 0 24 24">
+      <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
+    </svg>
+  );
+}
+
+function SearchIcon() {
+  return (
+    <svg aria-hidden="true" className="size-5" fill="none" viewBox="0 0 20 20">
+      <path
+        d="m17.5 17.5-3.8-3.8M15.8 8.8a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="1.6"
+      />
+    </svg>
+  );
+}
+
+function ImageIcon() {
+  return (
+    <svg aria-hidden="true" className="size-5" fill="none" viewBox="0 0 20 20">
+      <path
+        d="M4 3.5h12A1.5 1.5 0 0 1 17.5 5v10A1.5 1.5 0 0 1 16 16.5H4A1.5 1.5 0 0 1 2.5 15V5A1.5 1.5 0 0 1 4 3.5Zm.5 10 3.1-3.1 2.2 2.2 1.8-1.8 3.9 3.9M7.2 7.2h.01"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+      />
+    </svg>
+  );
+}
+
+function VideoIcon() {
+  return (
+    <svg aria-hidden="true" className="size-5" fill="none" viewBox="0 0 20 20">
+      <path
+        d="M3.5 6A1.5 1.5 0 0 1 5 4.5h7A1.5 1.5 0 0 1 13.5 6v8A1.5 1.5 0 0 1 12 15.5H5A1.5 1.5 0 0 1 3.5 14V6Zm10 2.4 3-1.8v6.8l-3-1.8"
+        stroke="currentColor"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+      />
+    </svg>
+  );
+}
+
+function ShareModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="share-modal-title"
+    >
+      <div className="max-h-[calc(100vh-48px)] w-[672px] max-w-full overflow-y-auto rounded-2xl border border-white/10 bg-[rgba(15,15,25,0.95)] px-8 pt-8 pb-px shadow-[0_24px_80px_rgba(0,0,0,0.45)] max-[560px]:px-5 max-[560px]:pt-6">
+        <div className="flex h-10 items-center justify-between">
+          <h2 id="share-modal-title" className="m-0 text-2xl leading-8 font-bold text-[#f0f0f5]">
+            Share to Feed
+          </h2>
+          <button
+            className="flex size-10 items-center justify-center rounded-[10px] text-white transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            type="button"
+            aria-label="Close share modal"
+            onClick={onClose}
+          >
+            <CloseIcon />
+          </button>
+        </div>
+
+        <form className="mt-6 flex flex-col gap-6">
+          <label className="flex flex-col gap-3">
+            <span className="text-base leading-6 font-medium text-[#f0f0f5]">Select Game</span>
+            <span className="flex h-[50px] items-center gap-2 rounded-[10px] border border-white/10 bg-[rgba(30,30,50,0.6)] px-[17px] py-[13px] text-[#a0a0b0]">
+              <SearchIcon />
+              <input
+                className="min-w-0 flex-1 bg-transparent text-base leading-6 font-medium text-[#f0f0f5] outline-none placeholder:text-[#a0a0b0]"
+                placeholder="Search for a game..."
+                type="search"
+              />
+            </span>
+          </label>
+
+          <div className="flex flex-col gap-3">
+            <p className="m-0 text-base leading-6 font-medium text-[#f0f0f5]">Rating (Optional)</p>
+            <div className="flex h-8 items-center gap-2 text-[#202034]">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <button className="transition hover:scale-110 hover:text-[#facc15]" type="button" aria-label={`Rate ${index + 1} star`} key={index}>
+                  <StarIcon filled={false} />
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <label className="flex flex-col gap-3">
+            <span className="text-base leading-6 font-medium text-[#f0f0f5]">What&apos;s on your mind?</span>
+            <textarea
+              className="h-[122px] resize-none rounded-[10px] border border-white/10 bg-[rgba(30,30,50,0.6)] px-4 py-3 text-base leading-6 text-[#f0f0f5] outline-none placeholder:text-[#a0a0b0] focus:border-white/25"
+              placeholder="Share your thoughts, progress, or achievements..."
+            />
+          </label>
+
+          <div className="flex flex-col gap-3">
+            <p className="m-0 text-base leading-6 font-medium text-[#f0f0f5]">Add Media (Optional)</p>
+            <div className="grid grid-cols-2 gap-3 max-[560px]:grid-cols-1">
+              <button
+                className="flex h-[50px] items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-[rgba(30,30,50,0.6)] text-base leading-6 font-medium text-[#f0f0f5] transition hover:border-white/25 hover:bg-[rgba(42,42,68,0.75)]"
+                type="button"
+              >
+                <ImageIcon />
+                Upload Images
+              </button>
+              <button
+                className="flex h-[50px] items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-[rgba(30,30,50,0.6)] text-base leading-6 font-medium text-[#f0f0f5] transition hover:border-white/25 hover:bg-[rgba(42,42,68,0.75)]"
+                type="button"
+              >
+                <VideoIcon />
+                Upload Video
+              </button>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="h-px flex-1 bg-white/10" />
+              <span className="text-sm leading-5 text-[#a0a0b0]">or</span>
+              <span className="h-px flex-1 bg-white/10" />
+            </div>
+            <input
+              className="h-[50px] rounded-[10px] border border-white/10 bg-[rgba(30,30,50,0.6)] px-4 py-3 text-base text-[#f0f0f5] outline-none placeholder:text-[#a0a0b0] focus:border-white/25"
+              placeholder="Paste video URL (YouTube, Twitch, etc.)"
+              type="url"
+            />
+          </div>
+
+          <div className="flex gap-3 pt-4 max-[560px]:flex-col">
+            <button
+              className="h-12 min-w-0 flex-1 rounded-lg border border-white/15 bg-gradient-to-t from-[#0043f8] to-[#0075f8] text-[15px] leading-6 font-bold tracking-[0.2565px] text-white transition hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_12px_28px_rgba(0,117,248,0.38)]"
+              type="submit"
+            >
+              Share
+            </button>
+            <button
+              className="h-[50px] w-[98px] rounded-[10px] border border-white/10 bg-white/5 text-base leading-6 font-medium text-[#f0f0f5] transition hover:bg-white/10 max-[560px]:w-full"
+              type="button"
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }
 
@@ -255,6 +412,8 @@ function ActivityFooter() {
 }
 
 export function ActivityPage() {
+  const [isShareOpen, setIsShareOpen] = useState(false);
+
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#080b1c] font-sans text-white">
       <Navbar />
@@ -269,7 +428,11 @@ export function ActivityPage() {
               See what your community is playing
             </p>
           </div>
-          <button className="mt-1 h-12 w-[162px] rounded-lg border border-white/15 bg-gradient-to-t from-[#0043f8] to-[#0075f8] text-[15px] leading-6 font-bold tracking-[0.2565px] text-white max-[620px]:mt-0" type="button">
+          <button
+            className="mt-1 h-12 w-[162px] rounded-lg border border-white/15 bg-gradient-to-t from-[#0043f8] to-[#0075f8] text-[15px] leading-6 font-bold tracking-[0.2565px] text-white transition duration-200 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_12px_28px_rgba(0,117,248,0.38)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white max-[620px]:mt-0"
+            type="button"
+            onClick={() => setIsShareOpen(true)}
+          >
             Share
           </button>
         </div>
@@ -282,6 +445,7 @@ export function ActivityPage() {
       </section>
 
       <ActivityFooter />
+      {isShareOpen ? <ShareModal onClose={() => setIsShareOpen(false)} /> : null}
     </main>
   );
 }

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useSyncExternalStore } from "react";
 import { Logo } from "./Logo";
 
@@ -51,6 +52,51 @@ function BellIcon() {
   );
 }
 
+function ProfileMenu({ compact = false }: { compact?: boolean }) {
+  const router = useRouter();
+
+  function handleLogout() {
+    window.localStorage.removeItem(authStorageKey);
+    window.dispatchEvent(new Event("auliano-auth-change"));
+    router.push("/");
+  }
+
+  return (
+    <details className="group relative">
+      <summary
+        className={`flex cursor-pointer list-none items-center gap-2 rounded-full outline-none transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white [&::-webkit-details-marker]:hidden ${
+          compact ? "" : "px-1 py-1"
+        }`}
+        aria-label="Open profile menu"
+      >
+        <Image
+          className={`${compact ? "size-10" : "size-12"} rounded-full object-cover`}
+          src="/figma-auth/avatar.png"
+          alt="Rokey"
+          width={compact ? 40 : 48}
+          height={compact ? 40 : 48}
+        />
+        <span className={`text-base text-[#e6e6e6] ${compact ? "" : "max-[520px]:hidden"}`}>Rokey</span>
+      </summary>
+      <div className="absolute top-[calc(100%+10px)] right-0 z-50 flex w-[170px] flex-col overflow-hidden rounded-xl border border-white/10 bg-[rgba(4,4,4,0.92)] p-2 shadow-[0_14px_34px_rgba(0,0,0,0.46)]">
+        <Link
+          className="rounded-lg px-3 py-2 text-sm font-medium text-white no-underline transition hover:bg-white/10"
+          href="/profile"
+        >
+          Profile
+        </Link>
+        <button
+          className="rounded-lg px-3 py-2 text-left text-sm font-medium text-[#ff8585] transition hover:bg-white/10"
+          type="button"
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
+      </div>
+    </details>
+  );
+}
+
 export function Navbar() {
   const isLoggedIn = useSyncExternalStore(
     subscribeToAuthUpdates,
@@ -61,11 +107,13 @@ export function Navbar() {
   if (isLoggedIn) {
     return (
       <header
-        className="absolute top-3 left-1/2 z-30 flex w-[min(1317px,calc(100%-28px))] -translate-x-1/2 flex-col items-start rounded-[24px] bg-[rgba(4,4,4,0.15)] px-6 py-4 shadow-[0_4px_18.4px_rgba(0,0,0,0.6)]"
+        className="absolute border border-white/10 top-3 left-1/2 z-30 flex w-[min(1317px,calc(100%-28px))] -translate-x-1/2 flex-col items-start rounded-[24px] bg-[rgba(4,4,4,0.15)] px-6 py-4 shadow-[0_4px_18.4px_rgba(0,0,0,0.6)]"
         data-node-id="267:5343"
       >
         <div className="flex w-full items-center justify-between">
-          <Logo />
+          <Link className="block rounded-full focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white" href="/" aria-label="Go to home">
+            <Logo />
+          </Link>
           <nav className="flex items-center gap-8 text-base font-medium text-white max-[760px]:hidden" aria-label="Authenticated navigation">
             {authedNavLinks.map((link) => (
               <Link className="text-inherit no-underline" href={link.href} key={link.label}>
@@ -84,16 +132,7 @@ export function Navbar() {
                 2
               </span>
             </button>
-            <div className="flex items-center gap-2">
-              <Image
-                className="size-12 rounded-full object-cover"
-                src="/figma-auth/avatar.png"
-                alt="Rokey"
-                width={48}
-                height={48}
-              />
-              <span className="text-base text-[#e6e6e6] max-[520px]:hidden">Rokey</span>
-            </div>
+            <ProfileMenu />
           </div>
           <div className="relative hidden items-center gap-3 max-[760px]:flex">
             <button
@@ -125,15 +164,8 @@ export function Navbar() {
                     {link.label}
                   </Link>
                 ))}
-                <div className="mt-1 flex items-center gap-2 border-t border-white/10 pt-4">
-                  <Image
-                    className="size-10 rounded-full object-cover"
-                    src="/figma-auth/avatar.png"
-                    alt="Rokey"
-                    width={40}
-                    height={40}
-                  />
-                  <span className="text-base text-[#e6e6e6]">Rokey</span>
+                <div className="mt-1 border-t border-white/10 pt-4">
+                  <ProfileMenu compact />
                 </div>
               </div>
             </details>
@@ -144,8 +176,10 @@ export function Navbar() {
   }
 
   return (
-    <header className="absolute top-5 left-1/2 z-30 flex w-[min(1280px,calc(100%-80px))] -translate-x-1/2 items-center justify-between rounded-[24px] bg-[rgba(1,1,1,0.30)] px-6 py-4 shadow-[0_4px_18.4px_rgba(0,0,0,0.8)] max-[1180px]:w-[calc(100%-32px)]">
-      <Logo />
+    <header className="absolute border border-white/10 top-5 left-1/2 z-30 flex w-[min(1280px,calc(100%-80px))] -translate-x-1/2 items-center justify-between rounded-[24px] bg-[rgba(1,1,1,0.30)] px-6 py-4 shadow-[0_4px_18.4px_rgba(0,0,0,0.8)] max-[1180px]:w-[calc(100%-32px)]">
+      <Link className="block rounded-full focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white" href="/" aria-label="Go to home">
+        <Logo />
+      </Link>
       <nav
         className="flex items-center gap-8 text-base font-medium tracking-[-0.32px] max-[760px]:hidden"
         aria-label="Primary navigation"
