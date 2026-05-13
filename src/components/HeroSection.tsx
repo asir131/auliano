@@ -37,9 +37,9 @@ export function HeroSection() {
       </div>
 
       <div
-        className="relative z-20 mx-auto mt-12 grid w-[calc(100%-48px)] grid-cols-2 justify-items-center gap-6 pb-12 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:absolute xl:right-[46px] xl:bottom-[57px] xl:left-[46px] xl:mx-0 xl:mt-0 xl:w-auto xl:grid-cols-[repeat(5,256px)] xl:justify-around xl:pb-0 max-[1180px]:overflow-x-auto max-[1180px]:pb-1.5"
-        aria-label="Featured games"
-      >
+  className="relative z-20 mx-auto mt-12 grid w-[calc(100%-48px)] grid-cols-2 justify-items-center  pb-12 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:absolute xl:right-[150px] gap-6 xl:gap-0 xl:bottom-[57px] xl:left-[150px] xl:mx-0 xl:mt-0 xl:w-auto xl:grid-cols-[repeat(5,268px)] xl:justify-around xl:pb-0 max-[1180px]:overflow-x-auto max-[1180px]:pb-1.5 px-6"
+  aria-label="Featured games"
+>
         {hotImages.map((image, index) => (
           <Image
             className="h-[136px] w-[256px] rounded-[5px] object-cover"
