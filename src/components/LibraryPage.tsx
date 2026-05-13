@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Logo } from "./Logo";
 import { Navbar } from "./Navbar";
 
@@ -221,7 +222,10 @@ function GameCard({
   };
 }) {
   return (
-    <a className="block min-w-0 text-white no-underline" href="#">
+    <Link
+      className="block min-w-0 text-white no-underline"
+      href="/library/elden-ring-shadow-of-the-erdtree"
+    >
       <div className="relative aspect-[230/308] overflow-hidden rounded-[14px] bg-white/5">
         <Image className="object-cover" src={game.image} alt="" fill sizes="(max-width: 760px) 46vw, (max-width: 1180px) 30vw, 230px" />
       </div>
@@ -233,7 +237,7 @@ function GameCard({
         <span>{game.rating}</span>
         <span>({game.reviews})</span>
       </div>
-    </a>
+    </Link>
   );
 }
 

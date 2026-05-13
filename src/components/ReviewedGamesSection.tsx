@@ -104,8 +104,9 @@ export function ReviewedGamesSection() {
 
   return (
     <section
-      className="bg-[#080b1c] px-[100px] pt-3.5 pb-[50px] max-[1180px]:px-8 max-[760px]:px-6"
+      className="scroll-mt-28 bg-[#080b1c] px-[100px] pt-3.5 pb-[50px] max-[1180px]:px-8 max-[760px]:px-6"
       data-node-id="1:196"
+      id="reviews"
     >
       <div className="mx-auto w-[min(1240px,100%)]">
         <h2 className="m-0 text-center text-5xl leading-[1.3] font-semibold text-[#f0f0f5] max-[760px]:text-[34px]">

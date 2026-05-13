@@ -3,10 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Logo } from "./Logo";
 
-const navLinks = ["Home", "Reviews", "How it work"];
+const navLinks = [
+  { href: "/", label: "Home" },
+  { href: "/#reviews", label: "Reviews" },
+  { href: "/#how-it-works", label: "How it work" },
+];
 const authedNavLinks = [
   { href: "/activity", label: "Activity" },
   { href: "/library", label: "Library" },
@@ -98,11 +102,55 @@ function ProfileMenu({ compact = false }: { compact?: boolean }) {
 }
 
 export function Navbar() {
+  const router = useRouter();
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isLoggedIn = useSyncExternalStore(
     subscribeToAuthUpdates,
     getAuthSnapshot,
     getServerAuthSnapshot,
   );
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) {
+      return;
+    }
+
+    function handlePointerDown(event: PointerEvent) {
+      if (
+        mobileMenuRef.current &&
+        event.target instanceof Node &&
+        !mobileMenuRef.current.contains(event.target)
+      ) {
+        setIsMobileMenuOpen(false);
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsMobileMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isMobileMenuOpen]);
+
+  function closeMobileMenu() {
+    setIsMobileMenuOpen(false);
+  }
+
+  function handleMobileLogout() {
+    window.localStorage.removeItem(authStorageKey);
+    window.dispatchEvent(new Event("auliano-auth-change"));
+    closeMobileMenu();
+    router.push("/");
+  }
 
   if (isLoggedIn) {
     return (
@@ -134,7 +182,7 @@ export function Navbar() {
             </button>
             <ProfileMenu />
           </div>
-          <div className="relative hidden items-center gap-3 max-[760px]:flex">
+          <div className="relative hidden items-center gap-3 max-[760px]:flex" ref={mobileMenuRef}>
             <button
               className="relative flex size-10 items-center justify-center rounded-full bg-white text-[#1d4ed8]"
               type="button"
@@ -145,30 +193,56 @@ export function Navbar() {
                 2
               </span>
             </button>
-            <details className="group relative">
-              <summary
+            <div className="relative">
+              <button
                 className="flex size-10 cursor-pointer list-none flex-col items-center justify-center gap-1.5 rounded-lg border border-[#088bdc] bg-[#020202] bg-[linear-gradient(180deg,rgba(0,123,215,0)_0%,rgba(0,123,215,0.2)_100%)] shadow-[0_2px_5px_rgba(0,123,215,0.3),0_3px_10px_rgba(0,123,215,0.4),0_8px_20px_rgba(0,123,215,0.4)] [&::-webkit-details-marker]:hidden"
+                onClick={() => setIsMobileMenuOpen((isOpen) => !isOpen)}
+                type="button"
+                aria-expanded={isMobileMenuOpen}
                 aria-label="Open navigation menu"
               >
                 <span className="h-0.5 w-5 rounded-full bg-white" />
                 <span className="h-0.5 w-5 rounded-full bg-white" />
                 <span className="h-0.5 w-5 rounded-full bg-white" />
-              </summary>
-              <div className="absolute top-12 right-0 flex w-[230px] flex-col gap-4 rounded-2xl bg-[rgba(4,4,4,0.88)] p-4 shadow-[0_4px_18.4px_rgba(0,0,0,0.6)]">
-                {authedNavLinks.map((link) => (
-                  <Link
-                    className="text-base font-medium text-white no-underline"
-                    href={link.href}
-                    key={link.label}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-                <div className="mt-1 border-t border-white/10 pt-4">
-                  <ProfileMenu compact />
+              </button>
+              {isMobileMenuOpen ? (
+                <div className="absolute top-12 right-0 flex w-[230px] flex-col gap-4 rounded-2xl bg-[rgba(4,4,4,0.88)] p-4 shadow-[0_4px_18.4px_rgba(0,0,0,0.6)]">
+                  {authedNavLinks.map((link) => (
+                    <Link
+                      className="text-base font-medium text-white no-underline"
+                      href={link.href}
+                      key={link.label}
+                      onClick={closeMobileMenu}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                  <div className="mt-1 flex flex-col gap-3 border-t border-white/10 pt-4">
+                    <Link
+                      className="flex items-center gap-3 rounded-xl px-1 py-1 text-base font-medium text-white no-underline transition hover:bg-white/10"
+                      href="/profile"
+                      onClick={closeMobileMenu}
+                    >
+                      <Image
+                        className="size-10 rounded-full object-cover"
+                        src="/figma-auth/avatar.png"
+                        alt=""
+                        width={40}
+                        height={40}
+                      />
+                      <span>Profile</span>
+                    </Link>
+                    <button
+                      className="rounded-xl px-1 py-2 text-left text-base font-medium text-[#ff8585] transition hover:bg-white/10"
+                      type="button"
+                      onClick={handleMobileLogout}
+                    >
+                      Logout
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </details>
+              ) : null}
+            </div>
           </div>
         </div>
       </header>
@@ -185,9 +259,9 @@ export function Navbar() {
         aria-label="Primary navigation"
       >
         {navLinks.map((link) => (
-          <a className="text-inherit no-underline" href="#" key={link}>
-            {link}
-          </a>
+          <Link className="text-inherit no-underline" href={link.href} key={link.label}>
+            {link.label}
+          </Link>
         ))}
       </nav>
       <div className="flex items-center gap-3 max-[760px]:hidden">
@@ -204,37 +278,49 @@ export function Navbar() {
           Create Account
         </Link>
       </div>
-      <details className="group relative hidden max-[760px]:block">
-        <summary
+      <div className="relative hidden max-[760px]:block" ref={mobileMenuRef}>
+        <button
           className="flex size-10 cursor-pointer list-none flex-col items-center justify-center gap-1.5 rounded-lg border border-[#088bdc] bg-[#020202] bg-[linear-gradient(180deg,rgba(0,123,215,0)_0%,rgba(0,123,215,0.2)_100%)] shadow-[0_2px_5px_rgba(0,123,215,0.3),0_3px_10px_rgba(0,123,215,0.4),0_8px_20px_rgba(0,123,215,0.4)] [&::-webkit-details-marker]:hidden"
+          onClick={() => setIsMobileMenuOpen((isOpen) => !isOpen)}
+          type="button"
+          aria-expanded={isMobileMenuOpen}
           aria-label="Open navigation menu"
         >
           <span className="h-0.5 w-5 rounded-full bg-white" />
           <span className="h-0.5 w-5 rounded-full bg-white" />
           <span className="h-0.5 w-5 rounded-full bg-white" />
-        </summary>
-        <div className="absolute top-12 right-0 flex w-[220px] flex-col gap-3 rounded-2xl bg-[rgba(4,4,4,0.78)] p-4 shadow-[0_4px_18.4px_rgba(0,0,0,0.6)]">
-          {navLinks.map((link) => (
-            <a className="text-base font-medium text-white no-underline" href="#" key={link}>
-              {link}
-            </a>
-          ))}
-          <div className="mt-1 flex flex-col gap-3">
-            <Link
-              className="inline-flex h-10 items-center justify-center rounded-lg border border-[#088bdc] bg-[#020202] bg-[linear-gradient(180deg,rgba(0,123,215,0)_0%,rgba(0,123,215,0.2)_100%)] px-4 py-2 text-base font-medium leading-6 text-white no-underline shadow-[0_2px_5px_rgba(0,123,215,0.3),0_3px_10px_rgba(0,123,215,0.4),0_8px_20px_rgba(0,123,215,0.4)]"
-              href="/login"
-            >
-              Log In
-            </Link>
-            <Link
-              className="inline-flex h-10 items-center justify-center rounded-lg bg-gradient-to-t from-[#0043f8] to-[#0075f8] px-4 py-2 text-base font-medium leading-6 text-white no-underline"
-              href="/create-account"
-            >
-              Create Account
-            </Link>
+        </button>
+        {isMobileMenuOpen ? (
+          <div className="absolute top-12 right-0 flex w-[220px] flex-col gap-3 rounded-2xl bg-[rgba(4,4,4,0.78)] p-4 shadow-[0_4px_18.4px_rgba(0,0,0,0.6)]">
+            {navLinks.map((link) => (
+              <Link
+                className="text-base font-medium text-white no-underline"
+                href={link.href}
+                key={link.label}
+                onClick={closeMobileMenu}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <div className="mt-1 flex flex-col gap-3">
+              <Link
+                className="inline-flex h-10 items-center justify-center rounded-lg border border-[#088bdc] bg-[#020202] bg-[linear-gradient(180deg,rgba(0,123,215,0)_0%,rgba(0,123,215,0.2)_100%)] px-4 py-2 text-base font-medium leading-6 text-white no-underline shadow-[0_2px_5px_rgba(0,123,215,0.3),0_3px_10px_rgba(0,123,215,0.4),0_8px_20px_rgba(0,123,215,0.4)]"
+                href="/login"
+                onClick={closeMobileMenu}
+              >
+                Log In
+              </Link>
+              <Link
+                className="inline-flex h-10 items-center justify-center rounded-lg bg-gradient-to-t from-[#0043f8] to-[#0075f8] px-4 py-2 text-base font-medium leading-6 text-white no-underline"
+                href="/create-account"
+                onClick={closeMobileMenu}
+              >
+                Create Account
+              </Link>
+            </div>
           </div>
-        </div>
-      </details>
+        ) : null}
+      </div>
     </header>
   );
 }

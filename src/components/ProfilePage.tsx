@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import Image from "next/image";
 import { Logo } from "./Logo";
 import { Navbar } from "./Navbar";
+import { ReviewedGamesSection } from "./ReviewedGamesSection";
 
 const games = [
   {
@@ -125,6 +126,14 @@ const likedGames = [
     image: `/figma-likes/like-${coverNumber}.png`,
     rating: index === 2 ? 4 : index === 9 ? 4 : 4.5,
     title,
+  };
+});
+const listCovers = Array.from({ length: 15 }, (_, index) => {
+  const coverNumber = String(index + 1).padStart(2, "0");
+
+  return {
+    image: `/figma-list/list-${coverNumber}.png`,
+    title: `List game ${index + 1}`,
   };
 });
 
@@ -331,6 +340,32 @@ function GridIcon() {
   );
 }
 
+function InfoIcon() {
+  return (
+    <svg aria-hidden="true" className="size-4" fill="none" viewBox="0 0 16 16">
+      <circle cx="8" cy="8" r="5.75" stroke="#c8cacc" strokeWidth="1.2" />
+      <path d="M8 7.35v3.3M8 5.35h.01" stroke="#c8cacc" strokeLinecap="round" strokeWidth="1.35" />
+    </svg>
+  );
+}
+
+function ListViewIcon() {
+  return (
+    <svg aria-hidden="true" className="size-4" fill="none" viewBox="0 0 16 16">
+      <path d="M5.5 4h7M5.5 8h7M5.5 12h7" stroke="white" strokeLinecap="round" strokeWidth="1.35" />
+      <path d="M3.5 4h.01M3.5 8h.01M3.5 12h.01" stroke="white" strokeLinecap="round" strokeWidth="2" />
+    </svg>
+  );
+}
+
+function CompactGridIcon() {
+  return (
+    <svg aria-hidden="true" className="size-4" fill="none" viewBox="0 0 16 16">
+      <path d="M3 3h4v4H3V3ZM9 3h4v4H9V3ZM3 9h4v4H3V9ZM9 9h4v4H9V9Z" stroke="white" strokeWidth="1.2" />
+    </svg>
+  );
+}
+
 function HeartIcon() {
   return (
     <svg aria-hidden="true" className="size-2" fill="#ff4761" viewBox="0 0 12 12">
@@ -376,6 +411,22 @@ function LikedGameCard({ game }: { game: (typeof likedGames)[number] }) {
   );
 }
 
+function ListCoverCard({ cover }: { cover: (typeof listCovers)[number] }) {
+  return (
+    <article className="min-w-0 overflow-hidden rounded border border-[#333] bg-white/0 shadow-[0_10px_15px_-3px_rgba(0,0,0,0.35),0_4px_6px_-4px_rgba(0,0,0,0.35)]">
+      <div className="relative aspect-[2/3] w-full overflow-hidden">
+        <Image
+          className="object-cover"
+          src={cover.image}
+          alt={cover.title}
+          fill
+          sizes="(max-width: 420px) 44vw, (max-width: 760px) 28vw, (max-width: 980px) 18vw, 122px"
+        />
+      </div>
+    </article>
+  );
+}
+
 function ProfileContent() {
   return (
     <section className="mx-auto flex w-[min(1240px,calc(100%-64px))] flex-col gap-16 py-12 max-[760px]:w-[calc(100%-32px)]">
@@ -393,6 +444,242 @@ function ProfileContent() {
           {reviews.map((review) => (
             <ReviewCard review={review} key={review.name} />
           ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FormLabel({
+  children,
+  required = false,
+}: {
+  children: ReactNode;
+  required?: boolean;
+}) {
+  return (
+    <label className="flex h-5 items-center gap-2 text-sm leading-5 font-medium text-white">
+      {required ? <span className="size-2 rounded-full bg-[#1d4ed8]" aria-hidden="true" /> : null}
+      {children}
+    </label>
+  );
+}
+
+function TextField({
+  placeholder,
+  required = false,
+  label,
+}: {
+  placeholder?: string;
+  required?: boolean;
+  label: string;
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <FormLabel required={required}>{label}</FormLabel>
+      <input
+        className="h-12 w-full rounded bg-white/10 px-4 text-base text-white outline-none placeholder:text-[#6a7282] focus:ring-1 focus:ring-[#1d4ed8]"
+        placeholder={placeholder}
+        type="text"
+      />
+    </div>
+  );
+}
+
+function NewListContent({ onCancel }: { onCancel: () => void }) {
+  return (
+    <section className="mx-auto w-[min(1240px,calc(100%-48px))] px-6 pt-8 pb-24 max-[760px]:w-full max-[760px]:px-4">
+      <div className="flex flex-col gap-6">
+        <div className="border-b border-[#4a5565] pb-[13px]">
+          <h2 className="m-0 text-[30px] leading-9 font-medium text-white max-[520px]:text-2xl">
+            New List
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-[minmax(0,586px)_minmax(0,586px)] gap-[68px] max-[1180px]:gap-10 max-[900px]:grid-cols-1">
+          <div className="flex flex-col gap-6">
+            <TextField label="Name" required />
+
+            <div className="flex flex-col gap-2">
+              <div className="flex h-5 items-center justify-between gap-4">
+                <FormLabel>Tags</FormLabel>
+                <p className="m-0 truncate text-xs leading-4 text-[#99a1af]">
+                  Press Tab to complete. Enter to create
+                </p>
+              </div>
+              <input
+                className="h-12 w-full rounded bg-white/10 px-4 text-base text-white outline-none placeholder:text-[#6a7282] focus:ring-1 focus:ring-[#1d4ed8]"
+                placeholder="eg. top 10"
+                type="text"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <div className="flex h-5 items-center gap-1.5 text-sm leading-5 font-medium text-white">
+                <span>Who can view</span>
+                <InfoIcon />
+              </div>
+              <button
+                className="flex h-12 w-full items-center justify-end rounded bg-white/10 px-4 text-[#99a1af] transition-colors hover:bg-white/[0.13]"
+                type="button"
+                aria-label="Choose who can view"
+              >
+                <ChevronDownIcon />
+              </button>
+            </div>
+
+            <label className="flex items-start gap-3">
+              <input
+                className="mt-1 size-4 appearance-none bg-[#3d4654] checked:bg-[#1d4ed8]"
+                type="checkbox"
+              />
+              <span className="flex flex-col gap-1">
+                <span className="text-sm leading-5 font-medium text-white">Ranked list</span>
+                <span className="text-xs leading-4 text-[#99a1af]">Show position for each film.</span>
+              </span>
+            </label>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <div className="flex h-5 items-center justify-between gap-4">
+              <FormLabel>Description</FormLabel>
+              <button className="text-xs leading-4 font-medium text-[#99a1af]" type="button">
+                Show supported HTML
+              </button>
+            </div>
+            <textarea className="h-[270px] w-full resize-none rounded bg-white/10 p-4 text-base text-white outline-none focus:ring-1 focus:ring-[#1d4ed8] max-[900px]:h-48" />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4 max-[760px]:flex-wrap">
+          <button
+            className="h-12 shrink-0 rounded-lg border border-white/15 bg-gradient-to-t from-[#0043f8] to-[#0075f8] px-6 text-[15px] leading-6 font-bold tracking-[0.26px] text-white transition-opacity hover:opacity-95"
+            type="button"
+          >
+            Add a film
+          </button>
+          <input
+            className="h-11 min-w-[220px] flex-[320_0_0] rounded bg-white/10 px-4 text-base text-white outline-none placeholder:text-[#6a7282] focus:ring-1 focus:ring-[#1d4ed8] max-[760px]:flex-auto"
+            placeholder="Enter name of film..."
+            type="text"
+          />
+          <span className="text-base leading-6 text-[#99a1af]">or</span>
+          <button
+            className="h-10 rounded bg-[#567] px-6 text-sm leading-5 font-semibold text-white uppercase transition-colors hover:bg-[#657789]"
+            type="button"
+          >
+            Import
+          </button>
+        </div>
+
+        <div className="flex h-10 items-center justify-between gap-6 max-[620px]:h-auto max-[620px]:flex-col max-[620px]:items-start">
+          <div className="flex items-center gap-5">
+            <button
+              className="flex items-center gap-1 text-sm leading-5 font-medium text-[#99a1af]"
+              type="button"
+            >
+              SORT BY
+              <ChevronDownIcon />
+            </button>
+            <div className="flex gap-1">
+              <button
+                className="flex size-8 items-center justify-center rounded bg-[#567]"
+                type="button"
+                aria-label="List view"
+              >
+                <ListViewIcon />
+              </button>
+              <button
+                className="flex size-8 items-center justify-center rounded bg-[#3d4654]"
+                type="button"
+                aria-label="Grid view"
+              >
+                <CompactGridIcon />
+              </button>
+            </div>
+          </div>
+
+          <div className="flex gap-3 max-[620px]:w-full">
+            <button
+              className="h-10 rounded bg-[#567] px-6 text-sm leading-5 font-semibold text-white uppercase transition-colors hover:bg-[#657789] max-[620px]:flex-1"
+              onClick={onCancel}
+              type="button"
+            >
+              Cancel
+            </button>
+            <button
+              className="h-10 rounded-lg border border-white/15 bg-gradient-to-t from-[#0043f8] to-[#0075f8] px-6 text-[15px] leading-6 font-bold tracking-[0.26px] text-white transition-opacity hover:opacity-95 max-[620px]:flex-1"
+              type="button"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+
+        <div className="flex min-h-[218px] flex-col items-center justify-center gap-2 rounded border border-[#4a5565] px-6 text-center">
+          <h3 className="m-0 text-xl leading-7 font-semibold text-white">Your list is empty.</h3>
+          <p className="m-0 text-sm leading-5 text-[#99a1af]">
+            Add films using the field above, or from the links on a film poster or page.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ListContent({ onStartNewList }: { onStartNewList: () => void }) {
+  return (
+    <section className="mx-auto w-[min(1240px,calc(100%-48px))] px-6 pt-8 pb-24 max-[760px]:w-full max-[760px]:px-4">
+      <div className="flex flex-col gap-6">
+        <div className="flex items-end justify-between gap-6 pt-4 max-[900px]:flex-col max-[900px]:items-start">
+          <div className="border-b-2 border-[#1d4ed8] pb-1.5">
+            <h2 className="m-0 text-base leading-6 font-normal text-white uppercase">List</h2>
+          </div>
+
+          <div className="flex items-center gap-4 max-[900px]:w-full max-[900px]:flex-wrap">
+            <div className="flex flex-wrap items-center gap-4 border-r border-[#333] pr-[17px] max-[640px]:border-r-0 max-[640px]:pr-0">
+              <LikesFilter label="Rating" />
+              <LikesFilter label="Decade" />
+              <LikesFilter label="Genre" />
+              <LikesFilter label="Platform" />
+            </div>
+
+            <div className="flex items-center gap-4">
+              <LikesFilter label="Sort by" highlight="When liked" />
+              <button
+                className="text-[#9ca3af] transition-colors hover:text-white"
+                type="button"
+                aria-label="Toggle compact view"
+              >
+                <EyeIcon />
+              </button>
+              <button
+                className="text-[#9ca3af] transition-colors hover:text-white"
+                type="button"
+                aria-label="Toggle grid view"
+              >
+                <GridIcon />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-[minmax(0,668px)_minmax(260px,309px)] items-start gap-12 max-[1040px]:grid-cols-[minmax(0,1fr)_minmax(240px,309px)] max-[860px]:grid-cols-1">
+          <div className="grid grid-cols-5 gap-3 max-[760px]:grid-cols-4 max-[560px]:grid-cols-3 max-[420px]:grid-cols-2">
+            {listCovers.map((cover) => (
+              <ListCoverCard cover={cover} key={cover.image} />
+            ))}
+          </div>
+
+          <aside className="w-full max-w-[309px] max-[860px]:max-w-none">
+            <button
+              className="flex h-12 w-full items-center justify-center rounded-lg border border-white/15 bg-gradient-to-t from-[#0043f8] to-[#0075f8] px-6 py-3 text-[15px] leading-6 font-bold tracking-[0.26px] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-opacity hover:opacity-95"
+              onClick={onStartNewList}
+              type="button"
+            >
+              Start a new list...
+            </button>
+          </aside>
         </div>
       </div>
     </section>
@@ -536,11 +823,20 @@ function LikesContent() {
 
 export function ProfilePage() {
   const [activeTab, setActiveTab] = useState(tabs[0]);
+  const [isCreatingList, setIsCreatingList] = useState(false);
   const activeContent =
     activeTab === "WATCHLIST" ? (
       <WatchlistContent />
     ) : activeTab === "LIKES" ? (
       <LikesContent />
+    ) : activeTab === "REVIEWS" ? (
+      <ReviewedGamesSection />
+    ) : activeTab === "List" ? (
+      isCreatingList ? (
+        <NewListContent onCancel={() => setIsCreatingList(false)} />
+      ) : (
+        <ListContent onStartNewList={() => setIsCreatingList(true)} />
+      )
     ) : (
       <ProfileContent />
     );
@@ -592,7 +888,12 @@ export function ProfilePage() {
                     : "border-transparent text-[#e6e6e6] hover:text-white"
                 }`}
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => {
+                  setActiveTab(tab);
+                  if (tab !== "List") {
+                    setIsCreatingList(false);
+                  }
+                }}
                 type="button"
               >
                 {tab}

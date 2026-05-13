@@ -24,8 +24,9 @@ const steps = [
 export function HowItWorksSection() {
   return (
     <section
-      className="flex flex-col items-center gap-20 bg-[#080b1c] px-20 py-[50px] max-[760px]:gap-10 max-[760px]:px-6"
+      className="scroll-mt-28 flex flex-col items-center gap-20 bg-[#080b1c] px-20 py-[50px] max-[760px]:gap-10 max-[760px]:px-6"
       data-node-id="1:267"
+      id="how-it-works"
     >
       <h2 className="m-0 text-center text-5xl leading-[1.3] font-semibold text-[#fefefe] max-[760px]:text-[34px]">
         How it work
